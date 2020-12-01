@@ -471,7 +471,7 @@ bool BalanceToJSON(const std::string& address, uint32_t property, UniValue& bala
 // generate a list of seed blocks based on the data in LevelDB
 UniValue omni_getseedblocks(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "omni_getseedblocks startblock endblock\n"
             "\nReturns a list of blocks containing Omni transactions for use in seed block filtering.\n"
@@ -511,7 +511,7 @@ UniValue omni_getseedblocks(const JSONRPCRequest& request)
 // obtain the payload for a transaction
 UniValue omni_getpayload(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_getpayload \"txid\"\n"
             "\nGet the payload for an Omni transaction.\n"
@@ -558,7 +558,7 @@ UniValue omni_getpayload(const JSONRPCRequest& request)
 // determine whether to automatically commit transactions
 UniValue omni_setautocommit(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_setautocommit flag\n"
             "\nSets the global flag that determines whether transactions are automatically committed and broadcast.\n"
@@ -580,7 +580,7 @@ UniValue omni_setautocommit(const JSONRPCRequest& request)
 // display an MP balance via RPC
 UniValue omni_getbalance(const JSONRPCRequest& request)
 {
- if (request.params.size() != 2)
+ if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "omni_getbalance \"address\" propertyid\n"
             "\nReturns the token balance for a given address and property.\n"
@@ -610,7 +610,7 @@ UniValue omni_getbalance(const JSONRPCRequest& request)
 
 UniValue omni_getallbalancesforid(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_getallbalancesforid propertyid\n"
             "\nReturns a list of token balances for a given currency or property identifier.\n"
@@ -667,7 +667,7 @@ UniValue omni_getallbalancesforid(const JSONRPCRequest& request)
 
 UniValue omni_getallbalancesforaddress(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_getallbalancesforaddress \"address\"\n"
             "\nReturns a list of all token balances for a given address.\n"
@@ -717,7 +717,7 @@ UniValue omni_getallbalancesforaddress(const JSONRPCRequest& request)
 
 UniValue omni_getproperty(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_getproperty propertyid\n"
             "\nReturns details for about the tokens or smart property to lookup.\n"
@@ -777,27 +777,27 @@ UniValue omni_getproperty(const JSONRPCRequest& request)
 
 UniValue omni_listproperties(const JSONRPCRequest& request)
 {
-    // if (fHelp)
-    //     throw runtime_error(
-    //         "omni_listproperties\n"
-    //         "\nLists all tokens or smart properties.\n"
-    //         "\nResult:\n"
-    //         "[                                (array of JSON objects)\n"
-    //         "  {\n"
-    //         "    \"propertyid\" : n,                (number) the identifier of the tokens\n"
-    //         "    \"name\" : \"name\",                 (string) the name of the tokens\n"
-    //         "    \"category\" : \"category\",         (string) the category used for the tokens\n"
-    //         "    \"subcategory\" : \"subcategory\",   (string) the subcategory used for the tokens\n"
-    //         "    \"data\" : \"information\",          (string) additional information or a description\n"
-    //         "    \"url\" : \"uri\",                   (string) an URI, for example pointing to a website\n"
-    //         "    \"divisible\" : true|false         (boolean) whether the tokens are divisible\n"
-    //         "  },\n"
-    //         "  ...\n"
-    //         "]\n"
-    //         "\nExamples:\n"
-    //         + HelpExampleCli("omni_listproperties", "")
-    //         + HelpExampleRpc("omni_listproperties", "")
-    //     );
+    if (request.fHelp)
+        throw runtime_error(
+            "omni_listproperties\n"
+            "\nLists all tokens or smart properties.\n"
+            "\nResult:\n"
+            "[                                (array of JSON objects)\n"
+            "  {\n"
+            "    \"propertyid\" : n,                (number) the identifier of the tokens\n"
+            "    \"name\" : \"name\",                 (string) the name of the tokens\n"
+            "    \"category\" : \"category\",         (string) the category used for the tokens\n"
+            "    \"subcategory\" : \"subcategory\",   (string) the subcategory used for the tokens\n"
+            "    \"data\" : \"information\",          (string) additional information or a description\n"
+            "    \"url\" : \"uri\",                   (string) an URI, for example pointing to a website\n"
+            "    \"divisible\" : true|false         (boolean) whether the tokens are divisible\n"
+            "  },\n"
+            "  ...\n"
+            "]\n"
+            "\nExamples:\n"
+            + HelpExampleCli("omni_listproperties", "")
+            + HelpExampleRpc("omni_listproperties", "")
+        );
 
     UniValue response(UniValue::VARR);
 
@@ -831,7 +831,7 @@ UniValue omni_listproperties(const JSONRPCRequest& request)
 
 UniValue omni_getcrowdsale(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 1 || request.params.size() > 2)
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw runtime_error(
             "omni_getcrowdsale propertyid ( verbose )\n"
             "\nReturns information about a crowdsale.\n"
@@ -975,7 +975,7 @@ UniValue omni_getcrowdsale(const JSONRPCRequest& request)
 
 UniValue omni_getactivecrowdsales(const JSONRPCRequest& request)
 {
-    if (false)
+    if (request.fHelp)
         throw runtime_error(
             "omni_getactivecrowdsales\n"
             "\nLists currently active crowdsales.\n"
@@ -1043,7 +1043,7 @@ UniValue omni_getactivecrowdsales(const JSONRPCRequest& request)
 
 UniValue omni_getgrants(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_getgrants propertyid\n"
             "\nReturns information about granted and revoked units of managed tokens.\n"
@@ -1125,7 +1125,7 @@ UniValue omni_getgrants(const JSONRPCRequest& request)
 
 UniValue omni_getorderbook(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 1 || request.params.size() > 2)
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw runtime_error(
             "omni_getorderbook propertyid ( propertyid )\n"
             "\nList active offers on the distributed token exchange.\n"
@@ -1194,7 +1194,7 @@ UniValue omni_getorderbook(const JSONRPCRequest& request)
 
 UniValue omni_gettradehistoryforaddress(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 1 || request.params.size() > 3)
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 3)
         throw runtime_error(
             "omni_gettradehistoryforaddress \"address\" ( count propertyid )\n"
             "\nRetrieves the history of orders on the distributed exchange for the supplied address.\n"
@@ -1278,7 +1278,7 @@ UniValue omni_gettradehistoryforaddress(const JSONRPCRequest& request)
 
 UniValue omni_gettradehistoryforpair(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 2 || request.params.size() > 3)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 3)
         throw runtime_error(
             "omni_gettradehistoryforpair propertyid propertyid ( count )\n"
             "\nRetrieves the history of trades on the distributed token exchange for the specified market.\n"
@@ -1325,7 +1325,7 @@ UniValue omni_gettradehistoryforpair(const JSONRPCRequest& request)
 
 UniValue omni_getactivedexsells(const JSONRPCRequest& request)
 {
-    if (request.params.size() > 1)
+    if (request.fHelp || request.params.size() > 1)
         throw runtime_error(
             "omni_getactivedexsells ( address )\n"
             "\nReturns currently active offers on the distributed exchange.\n"
@@ -1458,7 +1458,7 @@ UniValue omni_getactivedexsells(const JSONRPCRequest& request)
 
 UniValue omni_listblocktransactions(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_listblocktransactions index\n"
             "\nLists all Omni transactions in a block.\n"
@@ -1510,7 +1510,7 @@ UniValue omni_listblocktransactions(const JSONRPCRequest& request)
 
 UniValue omni_gettransaction(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_gettransaction \"txid\"\n"
             "\nGet detailed information about an Omni transaction.\n"
@@ -1548,7 +1548,7 @@ UniValue omni_gettransaction(const JSONRPCRequest& request)
 
 UniValue omni_listtransactions(const JSONRPCRequest& request)
 {
-    if (request.params.size() > 5)
+    if (request.fHelp || request.params.size() > 5)
         throw runtime_error(
             "omni_listtransactions ( \"address\" count skip startblock endblock )\n"
             "\nList wallet transactions, optionally filtered by an address and block boundaries.\n"
@@ -1629,7 +1629,7 @@ UniValue omni_listtransactions(const JSONRPCRequest& request)
 
 UniValue omni_listpendingtransactions(const JSONRPCRequest& request)
 {
-    if (request.params.size() > 1)
+    if (request.fHelp || request.params.size() > 1)
         throw runtime_error(
             "omni_listpendingtransactions ( \"address\" )\n"
             "\nReturns a list of unconfirmed Omni transactions, pending in the memory pool.\n"
@@ -1680,7 +1680,7 @@ UniValue omni_listpendingtransactions(const JSONRPCRequest& request)
 
 UniValue omni_getinfo(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "omni_getinfo\n"
             "Returns various state information of the client and protocol.\n"
@@ -1764,7 +1764,7 @@ UniValue omni_getinfo(const JSONRPCRequest& request)
 
 UniValue omni_getactivations(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "omni_getactivations\n"
             "Returns pending and completed feature activations.\n"
@@ -1828,7 +1828,7 @@ UniValue omni_getactivations(const JSONRPCRequest& request)
 
 UniValue omni_getsto(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 1 || request.params.size() > 2)
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw runtime_error(
             "omni_getsto \"txid\" \"recipientfilter\"\n"
             "\nGet information and recipients of a send-to-owners transaction.\n"
@@ -1877,7 +1877,7 @@ UniValue omni_getsto(const JSONRPCRequest& request)
 
 UniValue omni_gettrade(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "omni_gettrade \"txid\"\n"
             "\nGet detailed information and trade matches for orders on the distributed token exchange.\n"
@@ -1933,7 +1933,7 @@ UniValue omni_gettrade(const JSONRPCRequest& request)
 
 UniValue omni_getcurrentconsensushash(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "omni_getcurrentconsensushash\n"
             "\nReturns the consensus hash for all balances for the current block.\n"

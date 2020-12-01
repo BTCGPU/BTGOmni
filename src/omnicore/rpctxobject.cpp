@@ -92,7 +92,7 @@ int populateRPCTransactionObject(const CTransaction& tx, const uint256& blockHas
         uint64_t tmpVout, tmpNValue, tmpPropertyId;
         {
             LOCK(cs_tally);
-            // p_txlistdb->getPurchaseDetails(txid, 1, &tmpBuyer, &tmpSeller, &tmpVout, &tmpPropertyId, &tmpNValue);
+            p_txlistdb->getPurchaseDetails(txid, 1, &tmpBuyer, &tmpSeller, &tmpVout, &tmpPropertyId, &tmpNValue);
         }
         UniValue purchases(UniValue::VARR);
         if (populateRPCDExPurchases(tx, purchases, filterAddress) <= 0) return -1;

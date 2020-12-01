@@ -47,7 +47,7 @@ std::vector<TransactionRestriction> CConsensusParams::GetRestrictions() const
         { MSC_TYPE_TRADE_OFFER,               MP_TX_PKT_V1,  false,   MSC_DEX_BLOCK      },
         { MSC_TYPE_ACCEPT_OFFER_BTC,          MP_TX_PKT_V0,  false,   MSC_DEX_BLOCK      },
 
-        { MSC_TYPE_CREATE_PROPERTY_FIXED,     MP_TX_PKT_V0,  false,   MSC_SP_BLOCK       },
+        { MSC_TYPE_CREATE_PROPERTY_FIXED,     MP_TX_PKT_V0,  false,   MSC_FIXED_BLOCK    },
         { MSC_TYPE_CREATE_PROPERTY_VARIABLE,  MP_TX_PKT_V0,  false,   MSC_SP_BLOCK       },
         { MSC_TYPE_CREATE_PROPERTY_VARIABLE,  MP_TX_PKT_V1,  false,   MSC_SP_BLOCK       },
         { MSC_TYPE_CLOSE_CROWDSALE,           MP_TX_PKT_V0,  false,   MSC_SP_BLOCK       },
@@ -61,18 +61,17 @@ std::vector<TransactionRestriction> CConsensusParams::GetRestrictions() const
         { MSC_TYPE_FREEZE_PROPERTY_TOKENS,    MP_TX_PKT_V0,  false,   MSC_MANUALSP_BLOCK },
         { MSC_TYPE_UNFREEZE_PROPERTY_TOKENS,  MP_TX_PKT_V0,  false,   MSC_MANUALSP_BLOCK },
 
-        { MSC_TYPE_SEND_TO_OWNERS,            MP_TX_PKT_V0,  false,   MSC_STO_BLOCK      },
-        { MSC_TYPE_SEND_TO_OWNERS,            MP_TX_PKT_V1,  false,   MSC_STOV1_BLOCK    },
+        { MSC_TYPE_TRADE_OFFER,               MP_TX_PKT_V0,  false,   MSC_DEX_BLOCK      },
+        { MSC_TYPE_ACCEPT_OFFER_BTC,          MP_TX_PKT_V1,  false,   MSC_DEX_BLOCK    },
+        { MSC_TYPE_DEX_PAYMENT,               MP_TX_PKT_V0,  true,    MSC_DEX_BLOCK },
 
         { MSC_TYPE_METADEX_TRADE,             MP_TX_PKT_V0,  false,   MSC_METADEX_BLOCK  },
         { MSC_TYPE_METADEX_CANCEL_PRICE,      MP_TX_PKT_V0,  false,   MSC_METADEX_BLOCK  },
         { MSC_TYPE_METADEX_CANCEL_PAIR,       MP_TX_PKT_V0,  false,   MSC_METADEX_BLOCK  },
         { MSC_TYPE_METADEX_CANCEL_ECOSYSTEM,  MP_TX_PKT_V0,  false,   MSC_METADEX_BLOCK  },
 
-        { MSC_TYPE_SEND_ALL,                  MP_TX_PKT_V0,  false,   MSC_SEND_ALL_BLOCK },
+        { MSC_TYPE_SEND_ALL,                  MP_TX_PKT_V0,  false,   MSC_SEND_ALL_BLOCK }
 
-        { MSC_TYPE_OFFER_ACCEPT_A_BET,        MP_TX_PKT_V0,  false,   MSC_BET_BLOCK      },
-        { MSC_TYPE_DEX_PAYMENT,               MP_TX_PKT_V0,  true,    MSC_METADEX_BLOCK }
     };
 
     const size_t nSize = sizeof(vTxRestrictions) / sizeof(vTxRestrictions[0]);
@@ -159,40 +158,28 @@ std::vector<ConsensusCheckpoint> CMainConsensusParams::GetCheckpoints() const
  */
 CMainConsensusParams::CMainConsensusParams()
 {
-    // Exodus related:
-    exodusBonusPerWeek = 0.10;
-    exodusDeadline = 1377993600;
-    exodusReward = 100;
-    GENESIS_BLOCK = 580398;
-    LAST_EXODUS_BLOCK = 580398;
+
+    GENESIS_BLOCK = 99999999;
     // Notice range for feature activations:
     MIN_ACTIVATION_BLOCKS = 2048;  // ~2 weeks
     MAX_ACTIVATION_BLOCKS = 12288; // ~12 weeks
-    // Waiting period for enabling freezing
-    OMNI_FREEZE_WAIT_PERIOD = 4096; // ~4 weeks
     // Script related:
-    PUBKEYHASH_BLOCK = 0;
-    SCRIPTHASH_BLOCK = 322000;
-    MULTISIG_BLOCK = 0;
-    NULLDATA_BLOCK = 395000;
+    PUBKEYHASH_BLOCK = 99999999;
+    SCRIPTHASH_BLOCK = 99999999;
+    MULTISIG_BLOCK = 99999999;
+    NULLDATA_BLOCK = 99999999;
     // Transaction restrictions:
-    MSC_ALERT_BLOCK = 0;
-    MSC_SEND_BLOCK = 249498;
-    MSC_DEX_BLOCK = 290630;
-    MSC_SP_BLOCK = 297110;
-    MSC_MANUALSP_BLOCK = 323230;
-    MSC_STO_BLOCK = 342650;
-    MSC_METADEX_BLOCK = 400000;
-    MSC_SEND_ALL_BLOCK = 395000;
-    MSC_BET_BLOCK = 999999;
-    MSC_STOV1_BLOCK = 999999;
-    // Other feature activations:
-    GRANTEFFECTS_FEATURE_BLOCK = 394500;
-    DEXMATH_FEATURE_BLOCK = 395000;
-    SPCROWDCROSSOVER_FEATURE_BLOCK = 395000;
-    TRADEALLPAIRS_FEATURE_BLOCK = 438500;
-    FEES_FEATURE_BLOCK = 999999;
-    FREEZENOTICE_FEATURE_BLOCK = 999999;
+    MSC_ALERT_BLOCK = 99999999;
+    MSC_SEND_BLOCK = 99999999;
+    MSC_DEX_BLOCK = 99999999;
+    MSC_SP_BLOCK = 99999999;
+    MSC_MANUALSP_BLOCK = 99999999;
+    MSC_STO_BLOCK = 99999999;
+    MSC_METADEX_BLOCK = 99999999;
+    MSC_CRODWSALE_BLOCK = 99999999;
+    MSC_SEND_ALL_BLOCK = 99999999;
+    MSC_STOV1_BLOCK = 99999999;
+    MSC_FIXED_BLOCK = 99999999;
 }
 
 /**
@@ -201,39 +188,27 @@ CMainConsensusParams::CMainConsensusParams()
 CTestNetConsensusParams::CTestNetConsensusParams()
 {
     // Exodus related:
-    exodusBonusPerWeek = 0.00;
-    exodusDeadline = 1377993600;
-    exodusReward = 100;
-    GENESIS_BLOCK = 0;
-    LAST_EXODUS_BLOCK = std::numeric_limits<int>::max();
+    GENESIS_BLOCK = 85260;
     // Notice range for feature activations:
     MIN_ACTIVATION_BLOCKS = 0;
-    MAX_ACTIVATION_BLOCKS = 999999;
-    // Waiting period for enabling freezing
-    OMNI_FREEZE_WAIT_PERIOD = 0;
+    MAX_ACTIVATION_BLOCKS = 99999999;
     // Script related:
-    PUBKEYHASH_BLOCK = 0;
-    SCRIPTHASH_BLOCK = 0;
-    MULTISIG_BLOCK = 0;
-    NULLDATA_BLOCK = 0;
+    PUBKEYHASH_BLOCK = 85260;
+    SCRIPTHASH_BLOCK = 85260;
+    MULTISIG_BLOCK = 85260;
+    NULLDATA_BLOCK = 85260;
     // Transaction restrictions:
-    MSC_ALERT_BLOCK = 0;
-    MSC_SEND_BLOCK = 0;
-    MSC_DEX_BLOCK = 0;
-    MSC_SP_BLOCK = 0;
-    MSC_MANUALSP_BLOCK = 0;
-    MSC_STO_BLOCK = 0;
-    MSC_METADEX_BLOCK = 0;
-    MSC_SEND_ALL_BLOCK = 0;
-    MSC_BET_BLOCK = 999999;
-    MSC_STOV1_BLOCK = 0;
-    // Other feature activations:
-    GRANTEFFECTS_FEATURE_BLOCK = 0;
-    DEXMATH_FEATURE_BLOCK = 0;
-    SPCROWDCROSSOVER_FEATURE_BLOCK = 0;
-    TRADEALLPAIRS_FEATURE_BLOCK = 0;
-    FEES_FEATURE_BLOCK = 0;
-    FREEZENOTICE_FEATURE_BLOCK = 0;
+    MSC_ALERT_BLOCK = 85260;
+    MSC_SEND_BLOCK = 85260;
+    MSC_DEX_BLOCK = 99999999;
+    MSC_SP_BLOCK = 99999999;
+    MSC_MANUALSP_BLOCK = 99999999;
+    MSC_STO_BLOCK = 99999999;
+    MSC_METADEX_BLOCK = 99999999;
+    MSC_SEND_ALL_BLOCK = 99999999;
+    MSC_STOV1_BLOCK = 99999999;
+    MSC_CRODWSALE_BLOCK = 99999999;
+    MSC_FIXED_BLOCK = 99999999;
 }
 
 /**
@@ -242,16 +217,11 @@ CTestNetConsensusParams::CTestNetConsensusParams()
 CRegTestConsensusParams::CRegTestConsensusParams()
 {
     // Exodus related:
-    exodusBonusPerWeek = 0.00;
-    exodusDeadline = 1377993600;
-    exodusReward = 100;
     GENESIS_BLOCK = 101;
-    LAST_EXODUS_BLOCK = std::numeric_limits<int>::max();
     // Notice range for feature activations:
     MIN_ACTIVATION_BLOCKS = 5;
-    MAX_ACTIVATION_BLOCKS = 10;
-    // Waiting period for enabling freezing
-    OMNI_FREEZE_WAIT_PERIOD = 10;
+    MAX_ACTIVATION_BLOCKS = 200;
+
     // Script related:
     PUBKEYHASH_BLOCK = 0;
     SCRIPTHASH_BLOCK = 0;
@@ -266,15 +236,9 @@ CRegTestConsensusParams::CRegTestConsensusParams()
     MSC_STO_BLOCK = 0;
     MSC_METADEX_BLOCK = 0;
     MSC_SEND_ALL_BLOCK = 0;
-    MSC_BET_BLOCK = 999999;
-    MSC_STOV1_BLOCK = 999999;
-    // Other feature activations:
-    GRANTEFFECTS_FEATURE_BLOCK = 999999;
-    DEXMATH_FEATURE_BLOCK = 999999;
-    SPCROWDCROSSOVER_FEATURE_BLOCK = 999999;
-    TRADEALLPAIRS_FEATURE_BLOCK = 999999;
-    FEES_FEATURE_BLOCK = 999999;
-    FREEZENOTICE_FEATURE_BLOCK = 999999;
+    MSC_STOV1_BLOCK = 0;
+    MSC_CRODWSALE_BLOCK = 0;
+    MSC_FIXED_BLOCK = 0;
 }
 
 //! Consensus parameters for mainnet
@@ -394,6 +358,7 @@ bool ActivateFeature(uint16_t featureId, int activationBlock, uint32_t minClient
     if ((activationBlock < (transactionBlock + params.MIN_ACTIVATION_BLOCKS)) ||
         (activationBlock > (transactionBlock + params.MAX_ACTIVATION_BLOCKS))) {
             PrintToLog("Feature activation of ID %d refused due to notice checks\n", featureId);
+            PrintToLog("activationBlock: %d, transactionBlock: %d, params.MIN_ACTIVATION_BLOCKS: %d, params.MAX_ACTIVATION_BLOCKS: %d\n",activationBlock, transactionBlock, params.MIN_ACTIVATION_BLOCKS, params.MAX_ACTIVATION_BLOCKS);
             return false;
     }
 
@@ -407,39 +372,22 @@ bool ActivateFeature(uint16_t featureId, int activationBlock, uint32_t minClient
     std::string featureName = GetFeatureName(featureId);
     bool supported = OMNICORE_VERSION >= minClientVersion;
     switch (featureId) {
-        case FEATURE_CLASS_C:
-            MutableConsensusParams().NULLDATA_BLOCK = activationBlock;
         break;
+        case FEATURE_FIXED:
+            MutableConsensusParams().MSC_FIXED_BLOCK = activationBlock;
+            break;
+        case FEATURE_MANAGED:
+            MutableConsensusParams().MSC_MANUALSP_BLOCK = activationBlock;
+            break;
+        case FEATURE_DEX:
+            MutableConsensusParams().MSC_DEX_BLOCK = activationBlock;
+            break;
         case FEATURE_METADEX:
             MutableConsensusParams().MSC_METADEX_BLOCK = activationBlock;
-        break;
-        case FEATURE_BETTING:
-            MutableConsensusParams().MSC_BET_BLOCK = activationBlock;
-        break;
-        case FEATURE_GRANTEFFECTS:
-            MutableConsensusParams().GRANTEFFECTS_FEATURE_BLOCK = activationBlock;
-        break;
-        case FEATURE_DEXMATH:
-            MutableConsensusParams().DEXMATH_FEATURE_BLOCK = activationBlock;
-        break;
-        case FEATURE_SENDALL:
-            MutableConsensusParams().MSC_SEND_ALL_BLOCK = activationBlock;
-        break;
-        case FEATURE_SPCROWDCROSSOVER:
-            MutableConsensusParams().SPCROWDCROSSOVER_FEATURE_BLOCK = activationBlock;
-        break;
-        case FEATURE_TRADEALLPAIRS:
-            MutableConsensusParams().TRADEALLPAIRS_FEATURE_BLOCK = activationBlock;
-        break;
-        case FEATURE_FEES:
-            MutableConsensusParams().FEES_FEATURE_BLOCK = activationBlock;
-        break;
-        case FEATURE_STOV1:
-            MutableConsensusParams().MSC_STOV1_BLOCK = activationBlock;
-        break;
-        case FEATURE_FREEZENOTICE:
-            MutableConsensusParams().FREEZENOTICE_FEATURE_BLOCK = activationBlock;
-        break;
+            break;
+        case FEATURE_CROWDSALES:
+            MutableConsensusParams().MSC_CRODWSALE_BLOCK = activationBlock;
+            break;
         default:
             supported = false;
         break;
@@ -478,39 +426,22 @@ bool DeactivateFeature(uint16_t featureId, int transactionBlock)
 
     std::string featureName = GetFeatureName(featureId);
     switch (featureId) {
-        case FEATURE_CLASS_C:
-            MutableConsensusParams().NULLDATA_BLOCK = 999999;
-        break;
+        case FEATURE_FIXED:
+            MutableConsensusParams().MSC_FIXED_BLOCK = 99999999;
+            break;
+        case FEATURE_MANAGED:
+            MutableConsensusParams().MSC_MANUALSP_BLOCK = 99999999;
+            break;
+        case FEATURE_DEX:
+            MutableConsensusParams().MSC_DEX_BLOCK = 99999999;
+            break;
         case FEATURE_METADEX:
-            MutableConsensusParams().MSC_METADEX_BLOCK = 999999;
-        break;
-        case FEATURE_BETTING:
-            MutableConsensusParams().MSC_BET_BLOCK = 999999;
-        break;
-        case FEATURE_GRANTEFFECTS:
-            MutableConsensusParams().GRANTEFFECTS_FEATURE_BLOCK = 999999;
-        break;
-        case FEATURE_DEXMATH:
-            MutableConsensusParams().DEXMATH_FEATURE_BLOCK = 999999;
-        break;
-        case FEATURE_SENDALL:
-            MutableConsensusParams().MSC_SEND_ALL_BLOCK = 999999;
-        break;
-        case FEATURE_SPCROWDCROSSOVER:
-            MutableConsensusParams().SPCROWDCROSSOVER_FEATURE_BLOCK = 999999;
-        break;
-        case FEATURE_TRADEALLPAIRS:
-            MutableConsensusParams().TRADEALLPAIRS_FEATURE_BLOCK = 999999;
-        break;
-        case FEATURE_FEES:
-            MutableConsensusParams().FEES_FEATURE_BLOCK = 999999;
-        break;
-        case FEATURE_STOV1:
-            MutableConsensusParams().MSC_STOV1_BLOCK = 999999;
-        break;
-        case FEATURE_FREEZENOTICE:
-            MutableConsensusParams().FREEZENOTICE_FEATURE_BLOCK = 999999;
-        break;
+            MutableConsensusParams().MSC_METADEX_BLOCK = 99999999;
+            break;
+
+        case FEATURE_CROWDSALES:
+            MutableConsensusParams().MSC_CRODWSALE_BLOCK = 99999999;
+            break;
         default:
             return false;
         break;
@@ -531,18 +462,11 @@ bool DeactivateFeature(uint16_t featureId, int transactionBlock)
 std::string GetFeatureName(uint16_t featureId)
 {
     switch (featureId) {
-        case FEATURE_CLASS_C: return "Class C transaction encoding";
+        case FEATURE_FIXED: return "Token Creation (fixed amount)";
+        case FEATURE_MANAGED: return "Token Creation (managed)";
+        case FEATURE_DEX: return "Distributed Exchange (BTG for Tokens)";
         case FEATURE_METADEX: return "Distributed Meta Token Exchange";
-        case FEATURE_BETTING: return "Bet transactions";
-        case FEATURE_GRANTEFFECTS: return "Remove grant side effects";
-        case FEATURE_DEXMATH: return "DEx integer math update";
-        case FEATURE_SENDALL: return "Send All transactions";
-        case FEATURE_SPCROWDCROSSOVER: return "Disable crowdsale ecosystem crossovers";
-        case FEATURE_TRADEALLPAIRS: return "Allow trading all pairs on the Distributed Exchange";
-        case FEATURE_FEES: return "Fee system (inc 0.05% fee from trades of non-Omni pairs)";
-        case FEATURE_STOV1: return "Cross-property Send To Owners";
-        case FEATURE_FREEZENOTICE: return "Activate the waiting period for enabling freezing";
-
+        case FEATURE_CROWDSALES: return "Crodwsales creation";
         default: return "Unknown feature";
     }
 }
@@ -556,39 +480,22 @@ bool IsFeatureActivated(uint16_t featureId, int transactionBlock)
     int activationBlock = std::numeric_limits<int>::max();
 
     switch (featureId) {
-        case FEATURE_CLASS_C:
-            activationBlock = params.NULLDATA_BLOCK;
+        case FEATURE_FIXED:
+            activationBlock = params.MSC_FIXED_BLOCK;
+            break;
+        case FEATURE_MANAGED:
+            activationBlock = params.MSC_MANUALSP_BLOCK;
+            break;
+        case FEATURE_DEX:
+            activationBlock = params.MSC_DEX_BLOCK;
             break;
         case FEATURE_METADEX:
             activationBlock = params.MSC_METADEX_BLOCK;
             break;
-        case FEATURE_BETTING:
-            activationBlock = params.MSC_BET_BLOCK;
+        case FEATURE_CROWDSALES:
+            activationBlock = params.MSC_CRODWSALE_BLOCK;
             break;
-        case FEATURE_GRANTEFFECTS:
-            activationBlock = params.GRANTEFFECTS_FEATURE_BLOCK;
-            break;
-        case FEATURE_DEXMATH:
-            activationBlock = params.DEXMATH_FEATURE_BLOCK;
-            break;
-        case FEATURE_SENDALL:
-            activationBlock = params.MSC_SEND_ALL_BLOCK;
-            break;
-        case FEATURE_SPCROWDCROSSOVER:
-            activationBlock = params.SPCROWDCROSSOVER_FEATURE_BLOCK;
-            break;
-        case FEATURE_TRADEALLPAIRS:
-            activationBlock = params.TRADEALLPAIRS_FEATURE_BLOCK;
-            break;
-        case FEATURE_FEES:
-            activationBlock = params.FEES_FEATURE_BLOCK;
-            break;
-        case FEATURE_STOV1:
-            activationBlock = params.MSC_STOV1_BLOCK;
-            break;
-        case FEATURE_FREEZENOTICE:
-            activationBlock = params.FREEZENOTICE_FEATURE_BLOCK;
-        break;
+
         default:
             return false;
     }
@@ -613,7 +520,6 @@ bool IsTransactionTypeAllowed(int txBlock, uint32_t txProperty, uint16_t txType,
     {
         const TransactionRestriction& entry = *it;
         if (entry.txType != txType || entry.txVersion != version) {
-            PrintToLog("%s(): first continue\n",__func__);
             continue;
         }
         // a property identifier of 0 (= BTC) may be used as wildcard

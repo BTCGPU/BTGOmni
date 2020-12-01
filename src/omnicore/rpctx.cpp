@@ -40,7 +40,7 @@ using namespace mastercore;
 
 UniValue omni_sendrawtx(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 2 || request.params.size() > 5)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 5)
         throw runtime_error(
             "omni_sendrawtx \"fromaddress\" \"rawtransaction\" ( \"referenceaddress\" \"redeemaddress\" \"referenceamount\" )\n"
             "\nBroadcasts a raw Omni Layer transaction.\n"
@@ -80,9 +80,9 @@ UniValue omni_sendrawtx(const JSONRPCRequest& request)
     }
 }
 
-UniValue omni_send(const JSONRPCRequest& request)  // TODO: add the fhelp bool
+UniValue omni_send(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 4 || request.params.size() > 6)
+    if (request.fHelp || request.params.size() < 4 || request.params.size() > 6)
         throw runtime_error(
             "omni_send \"fromaddress\" \"toaddress\" propertyid \"amount\" ( \"redeemaddress\" \"referenceamount\" )\n"
 
@@ -140,7 +140,7 @@ UniValue omni_send(const JSONRPCRequest& request)  // TODO: add the fhelp bool
 
 UniValue omni_sendall(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 3 || request.params.size() > 5)
+    if (request.fHelp || request.params.size() < 3 || request.params.size() > 5)
         throw runtime_error(
             "omni_sendall \"fromaddress\" \"toaddress\" ecosystem ( \"redeemaddress\" \"referenceamount\" )\n"
 
@@ -194,7 +194,7 @@ UniValue omni_sendall(const JSONRPCRequest& request)
 
 UniValue omni_senddexsell(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 7)
+    if (request.fHelp || request.params.size() != 7)
         throw runtime_error(
             "omni_senddexsell \"fromaddress\" propertyidforsale \"amountforsale\" \"amountdesired\" paymentwindow minacceptfee action\n"
 
@@ -283,7 +283,7 @@ UniValue omni_senddexsell(const JSONRPCRequest& request)
 
 UniValue omni_senddexaccept(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 4 || request.params.size() > 5)
+    if (request.fHelp || request.params.size() < 4 || request.params.size() > 5)
         throw runtime_error(
             "omni_senddexaccept \"fromaddress\" \"toaddress\" propertyid \"amount\" ( override )\n"
 
@@ -365,7 +365,7 @@ UniValue omni_senddexaccept(const JSONRPCRequest& request)
 
 UniValue omni_sendissuancecrowdsale(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 14)
+    if (request.fHelp || request.params.size() != 14)
         throw runtime_error(
             "omni_sendissuancecrowdsale \"fromaddress\" ecosystem type previousid \"category\" \"subcategory\" \"name\" \"url\" \"data\" propertyiddesired tokensperunit deadline ( earlybonus issuerpercentage )\n"
 
@@ -438,7 +438,7 @@ UniValue omni_sendissuancecrowdsale(const JSONRPCRequest& request)
 
 UniValue omni_sendissuancefixed(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 10)
+    if (request.fHelp || request.params.size() != 10)
         throw runtime_error(
             "omni_sendissuancefixed \"fromaddress\" ecosystem type previousid \"category\" \"subcategory\" \"name\" \"url\" \"data\" \"amount\"\n"
 
@@ -501,7 +501,7 @@ UniValue omni_sendissuancefixed(const JSONRPCRequest& request)
 
 UniValue omni_sendissuancemanaged(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 9)
+    if (request.fHelp || request.params.size() != 9)
         throw runtime_error(
             "omni_sendissuancemanaged \"fromaddress\" ecosystem type previousid \"category\" \"subcategory\" \"name\" \"url\" \"data\"\n"
 
@@ -562,7 +562,7 @@ UniValue omni_sendissuancemanaged(const JSONRPCRequest& request)
 
 UniValue omni_sendsto(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 3 || request.params.size() > 5)
+    if (request.fHelp || request.params.size() < 3 || request.params.size() > 5)
         throw runtime_error(
             "omni_sendsto \"fromaddress\" propertyid \"amount\" ( \"redeemaddress\" distributionproperty )\n"
 
@@ -616,7 +616,7 @@ UniValue omni_sendsto(const JSONRPCRequest& request)
 
 UniValue omni_sendgrant(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 4 || request.params.size() > 5)
+    if (request.fHelp || request.params.size() < 4 || request.params.size() > 5)
         throw runtime_error(
             "omni_sendgrant \"fromaddress\" \"toaddress\" propertyid \"amount\" ( \"memo\" )\n"
 
@@ -671,7 +671,7 @@ UniValue omni_sendgrant(const JSONRPCRequest& request)
 
 UniValue omni_sendrevoke(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 3 || request.params.size() > 4)
+    if (request.fHelp || request.params.size() < 3 || request.params.size() > 4)
         throw runtime_error(
             "omni_sendrevoke \"fromaddress\" propertyid \"amount\" ( \"memo\" )\n"
 
@@ -725,7 +725,7 @@ UniValue omni_sendrevoke(const JSONRPCRequest& request)
 
 UniValue omni_sendclosecrowdsale(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "omni_sendclosecrowdsale \"fromaddress\" propertyid\n"
 
@@ -775,7 +775,7 @@ UniValue omni_sendclosecrowdsale(const JSONRPCRequest& request)
 
 UniValue trade_MP(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 6)
+    if (request.fHelp || request.params.size() != 6)
         throw runtime_error(
             "trade_MP \"fromaddress\" propertyidforsale \"amountforsale\" propertiddesired \"amountdesired\" action\n"
             "\nNote: this command is depreciated, and was replaced by:\n"
@@ -837,7 +837,7 @@ UniValue trade_MP(const JSONRPCRequest& request)
 
 UniValue omni_sendtrade(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 5)
+    if (request.fHelp || request.params.size() != 5)
         throw runtime_error(
             "omni_sendtrade \"fromaddress\" propertyidforsale \"amountforsale\" propertiddesired \"amountdesired\"\n"
 
@@ -895,7 +895,7 @@ UniValue omni_sendtrade(const JSONRPCRequest& request)
 
 UniValue omni_sendcanceltradesbyprice(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 5)
+    if (request.fHelp || request.params.size() != 5)
         throw runtime_error(
             "omni_sendcanceltradesbyprice \"fromaddress\" propertyidforsale \"amountforsale\" propertiddesired \"amountdesired\"\n"
 
@@ -953,7 +953,7 @@ UniValue omni_sendcanceltradesbyprice(const JSONRPCRequest& request)
 
 UniValue omni_sendcanceltradesbypair(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 3)
+    if (request.fHelp || request.params.size() != 3)
         throw runtime_error(
             "omni_sendcanceltradesbypair \"fromaddress\" propertyidforsale propertiddesired\n"
 
@@ -1007,7 +1007,7 @@ UniValue omni_sendcanceltradesbypair(const JSONRPCRequest& request)
 
 UniValue omni_sendcancelalltrades(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "omni_sendcancelalltrades \"fromaddress\" ecosystem\n"
 
@@ -1055,7 +1055,7 @@ UniValue omni_sendcancelalltrades(const JSONRPCRequest& request)
 
 UniValue omni_sendchangeissuer(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 3)
+    if (request.fHelp || request.params.size() != 3)
         throw runtime_error(
             "omni_sendchangeissuer \"fromaddress\" \"toaddress\" propertyid\n"
 
@@ -1105,7 +1105,7 @@ UniValue omni_sendchangeissuer(const JSONRPCRequest& request)
 
 UniValue omni_sendenablefreezing(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "omni_sendenablefreezing \"fromaddress\" propertyid\n"
 
@@ -1154,7 +1154,7 @@ UniValue omni_sendenablefreezing(const JSONRPCRequest& request)
 
 UniValue omni_senddisablefreezing(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "omni_senddisablefreezing \"fromaddress\" propertyid\n"
 
@@ -1204,7 +1204,7 @@ UniValue omni_senddisablefreezing(const JSONRPCRequest& request)
 
 UniValue omni_sendfreeze(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 4)
+    if (request.fHelp || request.params.size() != 4)
         throw runtime_error(
             "omni_sendfreeze \"fromaddress\" \"toaddress\" propertyid amount \n"
             "\nFreeze an address for a centrally managed token.\n"
@@ -1255,7 +1255,7 @@ UniValue omni_sendfreeze(const JSONRPCRequest& request)
 
 UniValue omni_sendunfreeze(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 4)
+    if (request.fHelp || request.params.size() != 4)
         throw runtime_error(
             "omni_sendunfreeze \"fromaddress\" \"toaddress\" propertyid amount \n"
             "\nUnfreezes an address for a centrally managed token.\n"
@@ -1306,7 +1306,7 @@ UniValue omni_sendunfreeze(const JSONRPCRequest& request)
 
 UniValue omni_sendactivation(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 4)
+    if (request.fHelp || request.params.size() != 4)
         throw runtime_error(
             "omni_sendactivation \"fromaddress\" featureid block minclientversion\n"
             "\nActivate a protocol feature.\n"
@@ -1351,7 +1351,7 @@ UniValue omni_sendactivation(const JSONRPCRequest& request)
 
 UniValue omni_senddeactivation(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "omni_senddeactivation \"fromaddress\" featureid\n"
             "\nDeactivate a protocol feature.  For Emergency Use Only.\n"
@@ -1392,7 +1392,7 @@ UniValue omni_senddeactivation(const JSONRPCRequest& request)
 
 UniValue omni_sendalert(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 4)
+    if (request.fHelp || request.params.size() != 4)
         throw runtime_error(
             "omni_sendalert \"fromaddress\" alerttype expiryvalue typecheck versioncheck \"message\"\n"
             "\nCreates and broadcasts an Omni Core alert.\n"
@@ -1445,7 +1445,7 @@ UniValue omni_sendalert(const JSONRPCRequest& request)
 
 UniValue omni_send_dexpayment(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 3)
+    if (request.fHelp || request.params.size() != 3)
         throw runtime_error(
             "omni_send_dexpayment \"fromaddress\" \"toaddress\"amount\" \n"
 

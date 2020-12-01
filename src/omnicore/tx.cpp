@@ -170,11 +170,11 @@ bool CMPTransaction::interpret_Transaction()
     //     case MSC_TYPE_UNFREEZE_PROPERTY_TOKENS:
     //         return interpret_UnfreezeTokens();
     //
-    //     case OMNICORE_MESSAGE_TYPE_DEACTIVATION:
-    //         return interpret_Deactivation();
-    //
-    //     case OMNICORE_MESSAGE_TYPE_ACTIVATION:
-    //         return interpret_Activation();
+        case OMNICORE_MESSAGE_TYPE_DEACTIVATION:
+            return interpret_Deactivation();
+
+        case OMNICORE_MESSAGE_TYPE_ACTIVATION:
+            return interpret_Activation();
     //
     //     case OMNICORE_MESSAGE_TYPE_ALERT:
     //         return interpret_Alert();
@@ -763,44 +763,44 @@ bool CMPTransaction::interpret_ChangeIssuer()
 //     return true;
 // }
 //
-// /** Tx 65533 */
-// bool CMPTransaction::interpret_Deactivation()
-// {
-//     if (pkt_size < 6) {
-//         return false;
-//     }
-//     memcpy(&feature_id, &pkt[4], 2);
-//     swapByteOrder16(feature_id);
-//
-//     if ((!rpcOnly && msc_debug_packets) || msc_debug_packets_readonly) {
-//         PrintToLog("\t      feature id: %d\n", feature_id);
-//     }
-//
-//     return true;
-// }
-//
-// /** Tx 65534 */
-// bool CMPTransaction::interpret_Activation()
-// {
-//     if (pkt_size < 14) {
-//         return false;
-//     }
-//     memcpy(&feature_id, &pkt[4], 2);
-//     swapByteOrder16(feature_id);
-//     memcpy(&activation_block, &pkt[6], 4);
-//     swapByteOrder32(activation_block);
-//     memcpy(&min_client_version, &pkt[10], 4);
-//     swapByteOrder32(min_client_version);
-//
-//     if ((!rpcOnly && msc_debug_packets) || msc_debug_packets_readonly) {
-//         PrintToLog("\t      feature id: %d\n", feature_id);
-//         PrintToLog("\tactivation block: %d\n", activation_block);
-//         PrintToLog("\t minimum version: %d\n", min_client_version);
-//     }
-//
-//     return true;
-// }
-//
+/** Tx 65533 */
+bool CMPTransaction::interpret_Deactivation()
+{
+    if (pkt_size < 6) {
+        return false;
+    }
+    memcpy(&feature_id, &pkt[4], 2);
+    swapByteOrder16(feature_id);
+
+    if ((!rpcOnly && msc_debug_packets) || msc_debug_packets_readonly) {
+        PrintToLog("\t      feature id: %d\n", feature_id);
+    }
+
+    return true;
+}
+
+/** Tx 65534 */
+bool CMPTransaction::interpret_Activation()
+{
+    if (pkt_size < 14) {
+        return false;
+    }
+    memcpy(&feature_id, &pkt[4], 2);
+    swapByteOrder16(feature_id);
+    memcpy(&activation_block, &pkt[6], 4);
+    swapByteOrder32(activation_block);
+    memcpy(&min_client_version, &pkt[10], 4);
+    swapByteOrder32(min_client_version);
+
+    if ((!rpcOnly && msc_debug_packets) || msc_debug_packets_readonly) {
+        PrintToLog("\t      feature id: %d\n", feature_id);
+        PrintToLog("\tactivation block: %d\n", activation_block);
+        PrintToLog("\t minimum version: %d\n", min_client_version);
+    }
+
+    return true;
+}
+
 // /** Tx 65535 */
 // bool CMPTransaction::interpret_Alert()
 // {
@@ -935,11 +935,11 @@ int CMPTransaction::interpretPacket()
         // case MSC_TYPE_UNFREEZE_PROPERTY_TOKENS:
         //     return logicMath_UnfreezeTokens();
         //
-        // case OMNICORE_MESSAGE_TYPE_DEACTIVATION:
-        //     return logicMath_Deactivation();
-        //
-        // case OMNICORE_MESSAGE_TYPE_ACTIVATION:
-        //     return logicMath_Activation();
+        case OMNICORE_MESSAGE_TYPE_DEACTIVATION:
+            return logicMath_Deactivation();
+
+        case OMNICORE_MESSAGE_TYPE_ACTIVATION:
+            return logicMath_Activation();
         //
         // case OMNICORE_MESSAGE_TYPE_ALERT:
         //     return logicMath_Alert();
@@ -1614,26 +1614,26 @@ int CMPTransaction::logicMath_CreatePropertyFixed()
         return (PKT_ERROR_SP -21);
     }
 
-    // if (!IsTransactionTypeAllowed(block, ecosystem, type, version)) {
-    //     PrintToLog("%s(): rejected: type %d or version %d not permitted for property %d at block %d\n",
-    //             __func__,
-    //             type,
-    //             version,
-    //             property,
-    //             block);
-    //     return (PKT_ERROR_SP -22);
-    // }
+    if (!IsTransactionTypeAllowed(block, ecosystem, type, version)) {
+        PrintToLog("%s(): rejected: type %d or version %d not permitted for property %d at block %d\n",
+                __func__,
+                type,
+                version,
+                property,
+                block);
+        return (PKT_ERROR_SP -22);
+    }
 
-    // if (nValue <= 0 || MAX_INT_8_BYTES < nValue) {
-    //     PrintToLog("%s(): rejected: value out of range or zero: %d\n", __func__, nValue);
-    //     return (PKT_ERROR_SP -23);
-    // }
-    //
-    // if (MSC_PROPERTY_TYPE_INDIVISIBLE != prop_type && MSC_PROPERTY_TYPE_DIVISIBLE != prop_type) {
-    //     PrintToLog("%s(): rejected: invalid property type: %d\n", __func__, prop_type);
-    //     return (PKT_ERROR_SP -36);
-    // }
-    //
+    if (nValue <= 0 || MAX_INT_8_BYTES < nValue) {
+        PrintToLog("%s(): rejected: value out of range or zero: %d\n", __func__, nValue);
+        return (PKT_ERROR_SP -23);
+    }
+
+    if (MSC_PROPERTY_TYPE_INDIVISIBLE != prop_type && MSC_PROPERTY_TYPE_DIVISIBLE != prop_type) {
+        PrintToLog("%s(): rejected: invalid property type: %d\n", __func__, prop_type);
+        return (PKT_ERROR_SP -36);
+    }
+
     if ('\0' == name[0]) {
         PrintToLog("%s(): rejected: property name must not be empty\n", __func__);
         return (PKT_ERROR_SP -37);
@@ -1682,19 +1682,6 @@ int CMPTransaction::logicMath_CreatePropertyVariable()
     if (OMNI_PROPERTY_MSC != ecosystem && OMNI_PROPERTY_TMSC != ecosystem) {
         PrintToLog("%s(): rejected: invalid ecosystem: %d\n", __func__, (uint32_t) ecosystem);
         return (PKT_ERROR_SP -21);
-    }
-
-    if (IsFeatureActivated(FEATURE_SPCROWDCROSSOVER, block)) {
-    /**
-     * Ecosystem crossovers shall not be allowed after the feature was enabled.
-     */
-    if (isTestEcosystemProperty(ecosystem) != isTestEcosystemProperty(property)) {
-        PrintToLog("%s(): rejected: ecosystem %d of tokens to issue and desired property %d not in same ecosystem\n",
-                __func__,
-                ecosystem,
-                property);
-        return (PKT_ERROR_SP -50);
-    }
     }
 
     if (!IsTransactionTypeAllowed(block, ecosystem, type, version)) {
@@ -1981,15 +1968,6 @@ int CMPTransaction::logicMath_GrantTokens()
 
     // Move the tokens
     assert(update_tally_map(receiver, property, nValue, BALANCE));
-
-    /**
-     * As long as the feature to disable the side effects of "granting tokens"
-     * is not activated, "granting tokens" can trigger crowdsale participations.
-     */
-    if (!IsFeatureActivated(FEATURE_GRANTEFFECTS, block)) {
-        // Is there an active crowdsale running from this recepient?
-        logicHelper_CrowdsaleParticipation();
-    }
 
     NotifyTotalTokensChanged(property, block);
 
@@ -2359,84 +2337,81 @@ int CMPTransaction::logicMath_ChangeIssuer()
 //     return 0;
 // }
 //
-// /** Tx 65533 */
-// int CMPTransaction::logicMath_Deactivation()
-// {
-//     if (!IsTransactionTypeAllowed(block, property, type, version)) {
-//         PrintToLog("%s(): rejected: type %d or version %d not permitted for property %d at block %d\n",
-//                 __func__,
-//                 type,
-//                 version,
-//                 property,
-//                 block);
-//         return (PKT_ERROR -22);
-//     }
-//
-//     // is sender authorized
-//     bool authorized = CheckDeactivationAuthorization(sender);
-//
-//     PrintToLog("\t          sender: %s\n", sender);
-//     PrintToLog("\t      authorized: %s\n", authorized);
-//
-//     if (!authorized) {
-//         PrintToLog("%s(): rejected: sender %s is not authorized to deactivate features\n", __func__, sender);
-//         return (PKT_ERROR -51);
-//     }
-//
-//     // authorized, request feature deactivation
-//     bool DeactivationSuccess = DeactivateFeature(feature_id, block);
-//
-//     if (!DeactivationSuccess) {
-//         PrintToLog("%s(): DeactivateFeature failed\n", __func__);
-//         return (PKT_ERROR -54);
-//     }
-//
-//     // successful deactivation - did we deactivate the MetaDEx?  If so close out all trades
-//     if (feature_id == FEATURE_METADEX) {
-//         MetaDEx_SHUTDOWN();
-//     }
-//     if (feature_id == FEATURE_TRADEALLPAIRS) {
-//         MetaDEx_SHUTDOWN_ALLPAIR();
-//     }
-//
-//     return 0;
-// }
-//
-// /** Tx 65534 */
-// int CMPTransaction::logicMath_Activation()
-// {
-//     if (!IsTransactionTypeAllowed(block, property, type, version)) {
-//         PrintToLog("%s(): rejected: type %d or version %d not permitted for property %d at block %d\n",
-//                 __func__,
-//                 type,
-//                 version,
-//                 property,
-//                 block);
-//         return (PKT_ERROR -22);
-//     }
-//
-//     // is sender authorized - temporarily use alert auths but ## TO BE MOVED TO FOUNDATION P2SH KEY ##
-//     bool authorized = CheckActivationAuthorization(sender);
-//
-//     PrintToLog("\t          sender: %s\n", sender);
-//     PrintToLog("\t      authorized: %s\n", authorized);
-//
-//     if (!authorized) {
-//         PrintToLog("%s(): rejected: sender %s is not authorized for feature activations\n", __func__, sender);
-//         return (PKT_ERROR -51);
-//     }
-//
-//     // authorized, request feature activation
-//     bool activationSuccess = ActivateFeature(feature_id, activation_block, min_client_version, block);
-//
-//     if (!activationSuccess) {
-//         PrintToLog("%s(): ActivateFeature failed to activate this feature\n", __func__);
-//         return (PKT_ERROR -54);
-//     }
-//
-//     return 0;
-// }
-//
+/** Tx 65533 */
+int CMPTransaction::logicMath_Deactivation()
+{
+    if (!IsTransactionTypeAllowed(block, property, type, version)) {
+        PrintToLog("%s(): rejected: type %d or version %d not permitted for property %d at block %d\n",
+                __func__,
+                type,
+                version,
+                property,
+                block);
+        return (PKT_ERROR -22);
+    }
+
+    // is sender authorized
+    bool authorized = CheckDeactivationAuthorization(sender);
+
+    PrintToLog("\t          sender: %s\n", sender);
+    PrintToLog("\t      authorized: %s\n", authorized);
+
+    if (!authorized) {
+        PrintToLog("%s(): rejected: sender %s is not authorized to deactivate features\n", __func__, sender);
+        return (PKT_ERROR -51);
+    }
+
+    // authorized, request feature deactivation
+    bool DeactivationSuccess = DeactivateFeature(feature_id, block);
+
+    if (!DeactivationSuccess) {
+        PrintToLog("%s(): DeactivateFeature failed\n", __func__);
+        return (PKT_ERROR -54);
+    }
+
+    // successful deactivation - did we deactivate the MetaDEx?  If so close out all trades
+    if (feature_id == FEATURE_METADEX) {
+        MetaDEx_SHUTDOWN();
+    }
+
+    return 0;
+}
+
+/** Tx 65534 */
+int CMPTransaction::logicMath_Activation()
+{
+    if (!IsTransactionTypeAllowed(block, property, type, version)) {
+        PrintToLog("%s(): rejected: type %d or version %d not permitted for property %d at block %d\n",
+                __func__,
+                type,
+                version,
+                property,
+                block);
+        return (PKT_ERROR -22);
+    }
+
+    // is sender authorized - temporarily use alert auths but ## TO BE MOVED TO FOUNDATION P2SH KEY ##
+    bool authorized = CheckActivationAuthorization(sender);
+
+    PrintToLog("\t          sender: %s\n", sender);
+    PrintToLog("\t      authorized: %s\n", authorized);
+
+    if (!authorized) {
+        PrintToLog("%s(): rejected: sender %s is not authorized for feature activations\n", __func__, sender);
+        return (PKT_ERROR -51);
+    }
+
+    // authorized, request feature activation
+    bool activationSuccess = ActivateFeature(feature_id, activation_block, min_client_version, block);
+
+    if (!activationSuccess) {
+        PrintToLog("%s(): ActivateFeature failed to activate this feature\n", __func__);
+        return (PKT_ERROR -54);
+    }
+
+    return 0;
+}
+
 // /** Tx 65535 */
 // int CMPTransaction::logicMath_Alert()
 // {

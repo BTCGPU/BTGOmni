@@ -26,10 +26,10 @@ extern CCriticalSection cs_main;
 using mastercore::cs_tx_cache;
 using mastercore::view;
 
-//
-// UniValue omni_decodetransaction(const UniValue& params, bool fHelp)
+
+// UniValue omni_decodetransaction(const JSONRPCRequest& request)
 // {
-//     if (fHelp || params.size() < 1 || params.size() > 3)
+//     if (request.fHelp || request.params.size() < 1 || request.params.size() > 3)
 //         throw std::runtime_error(
 //             "omni_decodetransaction \"rawtx\" ( \"prevtxs\" height )\n"
 //
@@ -72,20 +72,20 @@ using mastercore::view;
 //             + HelpExampleRpc("omni_decodetransaction", "\"010000000163af14ce6d477e1c793507e32a5b7696288fa89705c0d02a3f66beb3c5b8afee0100000000ffffffff02ac020000000000004751210261ea979f6a06f9dafe00fb1263ea0aca959875a7073556a088cdfadcd494b3752102a3fd0a8a067e06941e066f78d930bfc47746f097fcd3f7ab27db8ddf37168b6b52ae22020000000000001976a914946cb2e08075bcbaf157e47bcb67eb2b2339d24288ac00000000\", [{\"txid\":\"eeafb8c5b3be663f2ad0c00597a88f2896765b2ae30735791c7e476dce14af63\",\"vout\":1,\"scriptPubKey\":\"76a9149084c0bd89289bc025d0264f7f23148fb683d56c88ac\",\"value\":0.0001123}]")
 //         );
 //
-//     CTransaction tx = ParseTransaction(params[0]);
+//     CTransaction tx = ParseTransaction(request.params[0]);
 //
 //     // use a dummy coins view to store the user provided transaction inputs
 //     CCoinsView viewDummyTemp;
 //     CCoinsViewCache viewTemp(&viewDummyTemp);
 //
-//     if (params.size() > 1) {
-//         std::vector<PrevTxsEntry> prevTxsParsed = ParsePrevTxs(params[1]);
+//     if (request.params.size() > 1) {
+//         std::vector<PrevTxsEntry> prevTxsParsed = ParsePrevTxs(request.params[1]);
 //         InputsToView(prevTxsParsed, viewTemp);
 //     }
 //
 //     int blockHeight = 0;
-//     if (params.size() > 2) {
-//         blockHeight = params[2].get_int();
+//     if (request.params.size() > 2) {
+//         blockHeight = request.params[2].get_int();
 //     }
 //
 //     UniValue txObj(UniValue::VOBJ);
@@ -107,7 +107,7 @@ using mastercore::view;
 
 UniValue omni_createrawtx_opreturn(const JSONRPCRequest& request)
 {
-    if (request.params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw std::runtime_error(
             "omni_createrawtx_opreturn \"rawtx\" \"payload\"\n"
 
@@ -139,12 +139,12 @@ UniValue omni_createrawtx_opreturn(const JSONRPCRequest& request)
             .addOpReturn(payload)
             .build();
 
-    return EncodeHexTx(tx);
+    return EncodeHexTx(CTransaction(tx));
 }
-//
-// UniValue omni_createrawtx_multisig(const UniValue& params, bool fHelp)
+
+// UniValue omni_createrawtx_multisig(const JSONRPCRequest& request)
 // {
-//     if (fHelp || params.size() != 4)
+//     if (request.fHelp || request.params.size() != 4)
 //         throw std::runtime_error(
 //             "omni_createrawtx_multisig \"rawtx\" \"payload\" \"seed\" \"redeemkey\"\n"
 //
@@ -168,57 +168,57 @@ UniValue omni_createrawtx_opreturn(const JSONRPCRequest& request)
 //             + HelpExampleRpc("omni_createrawtx_multisig", "\"0100000001a7a9402ecd77f3c9f745793c9ec805bfa2e14b89877581c734c774864247e6f50400000000ffffffff01aa0a0000000000001976a9146d18edfe073d53f84dd491dae1379f8fb0dfe5d488ac00000000\", \"00000000000000020000000000989680\", \"1LifmeXYHeUe2qdKWBGVwfbUCMMrwYtoMm\", \"0252ce4bdd3ce38b4ebbc5a6e1343608230da508ff12d23d85b58c964204c4cef3\"")
 //         );
 //
-//     CMutableTransaction tx = ParseMutableTransaction(params[0]);
-//     std::vector<unsigned char> payload = ParseHexV(params[1], "payload");
-//     std::string obfuscationSeed = ParseAddressOrEmpty(params[2]);
-//     CPubKey redeemKey = ParsePubKeyOrAddress(params[3]);
+//     CMutableTransaction tx = ParseMutableTransaction(request.params[0]);
+//     std::vector<unsigned char> payload = ParseHexV(request.params[1], "payload");
+//     std::string obfuscationSeed = ParseAddressOrEmpty(request.params[2]);
+//     CPubKey redeemKey = ParsePubKeyOrAddress(request.params[3]);
 //
 //     // extend the transaction
 //     tx = OmniTxBuilder(tx)
 //             .addMultisig(payload, obfuscationSeed, redeemKey)
 //             .build();
 //
-//     return EncodeHexTx(tx);
+//     return EncodeHexTx(CTransaction(tx));
 // }
-//
-// UniValue omni_createrawtx_input(const UniValue& params, bool fHelp)
-// {
-//     if (fHelp || params.size() != 3)
-//         throw std::runtime_error(
-//             "omni_createrawtx_input \"rawtx\" \"txid\" n\n"
-//
-//             "\nAdds a transaction input to the transaction.\n"
-//
-//             "\nIf no raw transaction is provided, a new transaction is created.\n"
-//
-//             "\nArguments:\n"
-//             "1. rawtx                (string, required) the raw transaction to extend (can be null)\n"
-//             "2. txid                 (string, required) the hash of the input transaction\n"
-//             "3. n                    (number, required) the index of the transaction output used as input\n"
-//
-//             "\nResult:\n"
-//             "\"rawtx\"                 (string) the hex-encoded modified raw transaction\n"
-//
-//             "\nExamples\n"
-//             + HelpExampleCli("omni_createrawtx_input", "\"01000000000000000000\" \"b006729017df05eda586df9ad3f8ccfee5be340aadf88155b784d1fc0e8342ee\" 0")
-//             + HelpExampleRpc("omni_createrawtx_input", "\"01000000000000000000\", \"b006729017df05eda586df9ad3f8ccfee5be340aadf88155b784d1fc0e8342ee\", 0")
-//         );
-//
-//     CMutableTransaction tx = ParseMutableTransaction(params[0]);
-//     uint256 txid = ParseHashV(params[1], "txid");
-//     uint32_t nOut = ParseOutputIndex(params[2]);
-//
-//     // extend the transaction
-//     tx = OmniTxBuilder(tx)
-//             .addInput(txid, nOut)
-//             .build();
-//
-//     return EncodeHexTx(tx);
-// }
-//
+
+UniValue omni_createrawtx_input(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 3)
+        throw std::runtime_error(
+            "omni_createrawtx_input \"rawtx\" \"txid\" n\n"
+
+            "\nAdds a transaction input to the transaction.\n"
+
+            "\nIf no raw transaction is provided, a new transaction is created.\n"
+
+            "\nArguments:\n"
+            "1. rawtx                (string, required) the raw transaction to extend (can be null)\n"
+            "2. txid                 (string, required) the hash of the input transaction\n"
+            "3. n                    (number, required) the index of the transaction output used as input\n"
+
+            "\nResult:\n"
+            "\"rawtx\"                 (string) the hex-encoded modified raw transaction\n"
+
+            "\nExamples\n"
+            + HelpExampleCli("omni_createrawtx_input", "\"01000000000000000000\" \"b006729017df05eda586df9ad3f8ccfee5be340aadf88155b784d1fc0e8342ee\" 0")
+            + HelpExampleRpc("omni_createrawtx_input", "\"01000000000000000000\", \"b006729017df05eda586df9ad3f8ccfee5be340aadf88155b784d1fc0e8342ee\", 0")
+        );
+
+    CMutableTransaction tx = ParseMutableTransaction(request.params[0]);
+    uint256 txid = ParseHashV(request.params[1], "txid");
+    uint32_t nOut = ParseOutputIndex(request.params[2]);
+
+    // extend the transaction
+    tx = OmniTxBuilder(tx)
+            .addInput(txid, nOut)
+            .build();
+
+    return EncodeHexTx(CTransaction(tx));
+}
+
 UniValue omni_createrawtx_reference(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 2 || request.params.size() > 3)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 3)
         throw std::runtime_error(
             "omni_createrawtx_reference \"rawtx\" \"destination\" ( amount )\n"
 
@@ -252,12 +252,12 @@ UniValue omni_createrawtx_reference(const JSONRPCRequest& request)
             .addReference(destination, amount)
             .build();
 
-    return EncodeHexTx(tx);
+    return EncodeHexTx(CTransaction(tx));
 }
 
 UniValue omni_createrawtx_change(const JSONRPCRequest& request)
 {
-    if (request.params.size() < 4 || request.params.size() > 5)
+    if (request.fHelp || request.params.size() < 4 || request.params.size() > 5)
         throw std::runtime_error(
             "omni_createrawtx_change \"rawtx\" \"prevtxs\" \"destination\" fee ( position )\n"
 
@@ -317,7 +317,7 @@ UniValue omni_createrawtx_change(const JSONRPCRequest& request)
             .addChange(destination, viewTemp, txFee, nOut)
             .build();
 
-    return EncodeHexTx(tx);
+    return EncodeHexTx(CTransaction(tx));
 }
 
 static const CRPCCommand commands[] =
@@ -325,8 +325,8 @@ static const CRPCCommand commands[] =
   //  -------------------------------- ----------------------------- ---------------------------- ----------
     // { "omni layer (raw transactions)", "omni_decodetransaction",     &omni_decodetransaction,     true },
     { "omni layer (raw transactions)", "omni_createrawtx_opreturn",  &omni_createrawtx_opreturn,  true, {} },
-    // { "omni layer (raw transactions)", "omni_createrawtx_multisig",  &omni_createrawtx_multisig,  true, {} },
-    // { "omni layer (raw transactions)", "omni_createrawtx_input",     &omni_createrawtx_input,     true. {} },
+    // { "omni layer (raw transactions)", "omni_createrawtx_multisig",  &omni_createrawtx_,  true, {} },
+    { "omni layer (raw transactions)", "omni_createrawtx_input",     &omni_createrawtx_input,     true, {} },
     { "omni layer (raw transactions)", "omni_createrawtx_reference", &omni_createrawtx_reference, true, {} },
     { "omni layer (raw transactions)", "omni_createrawtx_change",    &omni_createrawtx_change,    true, {} },
 

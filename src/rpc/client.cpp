@@ -146,6 +146,11 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "echojson", 8, "arg8" },
     { "echojson", 9, "arg9" },
 
+    /* Omni Core - payloads */
+    { "omni_createpayload_sendactivation", 0, "" },
+    { "omni_createpayload_sendactivation", 1, "" },
+    { "omni_createpayload_sendactivation", 2, "" },
+
     /* Omni Core - raw transaction calls */
     { "omni_createrawtx_reference", 2, "" },
     { "omni_createrawtx_change", 1, "" },

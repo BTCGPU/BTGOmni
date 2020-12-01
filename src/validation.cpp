@@ -106,20 +106,6 @@ CScript COINBASE_FLAGS;
 
 const std::string strMessageMagic = "Bitcoin Gold Signed Message:\n";
 
-/*-------------------------- Omnicore G Port ---------------------------------*/
-//
-// Omni Core notification handlers
-//
-
-
-// int mastercore_handler_disc_begin(int nBlockNow, CBlockIndex const * pBlockIndex);
-// int mastercore_handler_disc_end(int nBlockNow, CBlockIndex const * pBlockIndex);
-// int mastercore_handler_block_begin(int nBlockNow, CBlockIndex const * pBlockIndex);
-// int mastercore_handler_block_end(int nBlockNow, CBlockIndex const * pBlockIndex, unsigned int);
-// int mastercore_handler_tx(CTransaction tx, int nBlock, unsigned int idx, CBlockIndex const * pBlockIndex);
-
-/*----------------------------------------------------------------------------*/
-
 
 // Internal stuff
 namespace {
@@ -2311,13 +2297,6 @@ bool static ConnectTip(CValidationState& state, const CChainParams& chainparams,
     // Update chainActive & related variables.
     UpdateTip(pindexNew, chainparams);
 
-    // Tell wallet about transactions that went from mempool
-    // to conflicted:
-    // BOOST_FOREACH(const CTransaction &tx, txConflicted) {
-    //   SyncWithWallets(tx, pindexNew, NULL);
-    // }
-    // ... and about transactions that got confirmed:
-    // TODO: shared_ptr  pointers!!!
     for(const CTransactionRef& tx : blockConnecting.vtx){
           //! Omni Core: new confirmed transaction notification
           LogPrint(BCLog::BENCH, "Omni Core handler: new confirmed transaction [height: %d, idx: %u]\n", GetHeight(), nTxIdx);

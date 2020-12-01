@@ -565,9 +565,6 @@ void CheckWalletUpdate(bool forceUpdate)
 /**
  * Returns the encoding class, used to embed a payload.
  *
- *   0 None
- *   1 Class A (p2pkh)
- *   2 Class B (multisig)
  *   3 Class C (op-return)
  */
 int mastercore::GetEncodingClass(const CTransaction& tx, int nBlock)
@@ -631,11 +628,9 @@ int mastercore::GetEncodingClass(const CTransaction& tx, int nBlock)
     }
 
     if (hasOpReturn) {
-        PrintToLog("getEncodingClass:OMNI_CLASS_C\n");
         return OMNI_CLASS_C;
     }
 
-    PrintToLog("getEncodingClass:NO_MARKER\n");
     return NO_MARKER;
 }
 
@@ -681,7 +676,7 @@ static bool FillTxInputCache(const CTransaction& tx)
         uint256 hashBlock = uint256();
 
         if (!GetTransaction(txIn.prevout.hash, txPrev, Params().GetConsensus(), hashBlock, true)) {
-           return false;
+            return false;
         }
 
         if (txPrev.get()->vout.size() <= nOut){
@@ -999,7 +994,7 @@ private:
     {
         int64_t secondsTotal = 0.001 * remainingTime;
         int64_t hours = secondsTotal / 3600;
-        int64_t minutes = secondsTotal / 60;
+        int64_t minutes = (secondsTotal / 60) % 60;
         int64_t seconds = secondsTotal % 60;
 
         if (hours > 0) {
@@ -1066,7 +1061,7 @@ static int msc_initial_scan(int nFirstBlock)
     int64_t nNow = GetTime();
     unsigned int nTxsTotal = 0;
     unsigned int nTxsFoundTotal = 0;
-    int nBlock = 999999;
+    int nBlock = 99999999;
     const int nLastBlock = GetHeight();
 
     // this function is useless if there are not enough blocks in the blockchain yet!
@@ -1439,8 +1434,7 @@ static int msc_file_load(const string &filename, int what, bool verifyHash = fal
       }
   }
 
-  PrintToLog("%s(%s), loaded lines= %d, res= %d\n", __FUNCTION__, filename, lines, res);
-  LogPrintf("%s(): file: %s , loaded lines= %d, res= %d\n", __FUNCTION__, filename, lines, res);
+  PrintToLog("%s(): file: %s, loaded lines= %d, res= %d\n", __func__, filename, lines, res);
 
   return res;
 }
@@ -1474,7 +1468,6 @@ static int load_most_relevant_state()
         return -1;
     }
 
-    // TODO: make this work out
     while (nullptr != spBlockIndex && !chainActive.Contains(spBlockIndex))
     {
         int remainingSPs = _my_sps->popBlock(spBlockIndex->GetBlockHash());
@@ -1848,7 +1841,7 @@ void clear_all_state()
     metadex.clear();
     // my_pending.clear();
     ResetConsensusParams();
-    // ClearActivations();
+    ClearActivations();
     // ClearAlerts();
     // ClearFreezeState();
 
@@ -1858,8 +1851,6 @@ void clear_all_state()
     s_stolistdb->Clear();
     t_tradelistdb->Clear();
     p_OmniTXDB->Clear();
-    p_feecache->Clear();
-    // p_feehistory->Clear();
     assert(p_txlistdb->setDBVersion() == DB_VERSION); // new set of databases, set DB version
     exodus_prev = 0;
 }
@@ -1878,7 +1869,6 @@ int mastercore_init()
         return 0;
     }
 
-    PrintToConsole("Initializing Omni Core v%s [%s]\n", OmniCoreVersion(), Params().NetworkIDString());
     PrintToLog("\nInitializing Omni Core v%s [%s]\n", OmniCoreVersion(), Params().NetworkIDString());
     PrintToLog("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
 
@@ -1903,16 +1893,12 @@ int mastercore_init()
             boost::filesystem::path spPath = GetDataDir() / "MP_spinfo";
             boost::filesystem::path stoPath = GetDataDir() / "MP_stolist";
             boost::filesystem::path omniTXDBPath = GetDataDir() / "Omni_TXDB";
-            // boost::filesystem::path feesPath = GetDataDir() / "OMNI_feecache";
-            // boost::filesystem::path feeHistoryPath = GetDataDir() / "OMNI_feehistory";
             if (boost::filesystem::exists(persistPath)) boost::filesystem::remove_all(persistPath);
             if (boost::filesystem::exists(txlistPath)) boost::filesystem::remove_all(txlistPath);
             if (boost::filesystem::exists(tradePath)) boost::filesystem::remove_all(tradePath);
             if (boost::filesystem::exists(spPath)) boost::filesystem::remove_all(spPath);
             if (boost::filesystem::exists(stoPath)) boost::filesystem::remove_all(stoPath);
             if (boost::filesystem::exists(omniTXDBPath)) boost::filesystem::remove_all(omniTXDBPath);
-            // if (boost::filesystem::exists(feesPath)) boost::filesystem::remove_all(feesPath);
-            // if (boost::filesystem::exists(feeHistoryPath)) boost::filesystem::remove_all(feeHistoryPath);
             PrintToLog("Success clearing persistence files in datadir %s\n", GetDataDir().string());
             startClean = true;
         } catch (const boost::filesystem::filesystem_error& e) {
@@ -1969,28 +1955,28 @@ int mastercore_init()
     // advance the waterline so that we start on the next unaccounted for block
     nWaterlineBlock += 1;
 
-    /*
+
     //collect the real Exodus balances available at the snapshot time
     //redundant? do we need to show it both pre-parse and post-parse?  if so let's label the printfs accordingly
-    if (msc_debug_exo) {
-        int64_t exodus_balance = getMPbalance(exodus_address, OMNI_PROPERTY_MSC, BALANCE);
-        PrintToLog("Exodus balance at start: %s\n", FormatDivisibleMP(exodus_balance));
-    }
+    // if (msc_debug_exo) {
+    //     int64_t exodus_balance = getMPbalance(exodus_address, OMNI_PROPERTY_MSC, BALANCE);
+    //     PrintToLog("Exodus balance at start: %s\n", FormatDivisibleMP(exodus_balance));
+    // }
 
-    load feature activation messages from txlistdb and process them accordingly
+    // load feature activation messages from txlistdb and process them accordingly
     p_txlistdb->LoadActivations(nWaterlineBlock);
 
     //load all alerts from levelDB (and immediately expire old ones)
-    p_txlistdb->LoadAlerts(nWaterlineBlock);
+    // p_txlistdb->LoadAlerts(nWaterlineBlock);
 
     //load the state of any freeable properties and frozen addresses from levelDB
-    if (!p_txlistdb->LoadFreezeState(nWaterlineBlock)) {
-        std::string strShutdownReason = "Failed to load freeze state from levelDB.  It is unsafe to continue.\n";
-        PrintToLog(strShutdownReason);
-        if (!GetBoolArg("-overrideforcedshutdown", false)) {
-            AbortNode(strShutdownReason, strShutdownReason);
-        }
-    } */
+    // if (!p_txlistdb->LoadFreezeState(nWaterlineBlock)) {
+    //     std::string strShutdownReason = "Failed to load freeze state from levelDB.  It is unsafe to continue.\n";
+    //     PrintToLog(strShutdownReason);
+    //     if (!GetBoolArg("-overrideforcedshutdown", false)) {
+    //         AbortNode(strShutdownReason, strShutdownReason);
+    //     }
+    // }
 
     // initial scan
     msc_initial_scan(nWaterlineBlock);
@@ -2090,8 +2076,9 @@ bool mastercore_handler_tx(CTransaction tx, int nBlock, unsigned int idx, const 
         if (interp_ret) PrintToLog("!!! interpretPacket() returned %d !!!\n", interp_ret);
 
         //NOTE: we need to return this number 1 from mp_obj.interpretPacket() (tx.cpp)
-        if (interp_ret == 1)
+        if (interp_ret == 1){
             HandleDExPayments(tx, nBlock, mp_obj.getSender());
+        }
 
         //  Only structurally valid transactions get recorded in levelDB
         //  PKT_ERROR - 2 = interpret_Transaction failed, structurally invalid payload
@@ -2239,7 +2226,7 @@ std::vector<std::string> COmniTransactionDB::FetchTransactionDetails(const uint2
 
 uint32_t COmniTransactionDB::FetchTransactionPosition(const uint256& txid)
 {
-    uint32_t posInBlock = 999999; // setting an initial arbitrarily high value will ensure transaction is always "last" in event of bug/exploit
+    uint32_t posInBlock = 99999999; // setting an initial arbitrarily high value will ensure transaction is always "last" in event of bug/exploit
 
     std::vector<std::string> vTransactionDetails = FetchTransactionDetails(txid);
     if (vTransactionDetails.size() == 2) {
@@ -2251,7 +2238,7 @@ uint32_t COmniTransactionDB::FetchTransactionPosition(const uint256& txid)
 
 std::string COmniTransactionDB::FetchInvalidReason(const uint256& txid)
 {
-    int processingResult = -999999;
+    int processingResult = -99999999;
 
     std::vector<std::string> vTransactionDetails = FetchTransactionDetails(txid);
     if (vTransactionDetails.size() == 2) {
@@ -2749,16 +2736,16 @@ void CMPTxList::recordMetaDExCancelTX(const uint256 &txidMaster, const uint256 &
     }
 
     // Step 4 - Write sub-record with cancel details
-    // const string txidStr = txidMaster.ToString() + "-C";
-    // const string subKey = STR_REF_SUBKEY_TXID_REF_COMBO(txidStr, refNumber);
-    // const string subValue = strprintf("%s:%d:%lu", txidSub.ToString(), propertyId, nValue);
-    // Status subStatus;
-    // PrintToLog("METADEXCANCELDEBUG : Writing sub-record %s with value %s\n", subKey, subValue);
-    // if (pdb)
-    // {
-    //     subStatus = pdb->Put(writeoptions, subKey, subValue);
-    //     PrintToLog("METADEXCANCELDEBUG : %s(): %s, line %d, file: %s\n", __FUNCTION__, subStatus.ToString(), __LINE__, __FILE__);
-    // }
+    const string txidStr = txidMaster.ToString() + "-C";
+    const string subKey = STR_REF_SUBKEY_TXID_REF_COMBO(txidStr, refNumber);
+    const string subValue = strprintf("%s:%d:%lu", txidSub.ToString(), propertyId, nValue);
+    Status subStatus;
+    PrintToLog("METADEXCANCELDEBUG : Writing sub-record %s with value %s\n", subKey, subValue);
+    if (pdb)
+    {
+        subStatus = pdb->Put(writeoptions, subKey, subValue);
+        PrintToLog("METADEXCANCELDEBUG : %s(): %s, line %d, file: %s\n", __FUNCTION__, subStatus.ToString(), __LINE__, __FILE__);
+    }
 }
 
 /**
@@ -2822,16 +2809,16 @@ void CMPTxList::recordPaymentTX(const uint256 &txid, bool fValid, int nBlock, un
     }
 
     // Step 4 - Write sub-record with payment details
-    // const string txidStr = txid.ToString();
-    // const string subKey = STR_PAYMENT_SUBKEY_TXID_PAYMENT_COMBO(txidStr, paymentNumber);
-    // const string subValue = strprintf("%d:%s:%s:%d:%lu", vout, buyer, seller, propertyId, nValue);
-    // Status subStatus;
-    // PrintToLog("DEXPAYDEBUG : Writing sub-record %s with value %s\n", subKey, subValue);
-    // if (pdb)
-    // {
-    //     subStatus = pdb->Put(writeoptions, subKey, subValue);
-    //     PrintToLog("DEXPAYDEBUG : %s(): %s, line %d, file: %s\n", __FUNCTION__, subStatus.ToString(), __LINE__, __FILE__);
-    // }
+    const string txidStr = txid.ToString();
+    const string subKey = STR_PAYMENT_SUBKEY_TXID_PAYMENT_COMBO(txidStr, paymentNumber);
+    const string subValue = strprintf("%d:%s:%s:%d:%lu", vout, buyer, seller, propertyId, nValue);
+    Status subStatus;
+    PrintToLog("DEXPAYDEBUG : Writing sub-record %s with value %s\n", subKey, subValue);
+    if (pdb)
+    {
+        subStatus = pdb->Put(writeoptions, subKey, subValue);
+        PrintToLog("DEXPAYDEBUG : %s(): %s, line %d, file: %s\n", __FUNCTION__, subStatus.ToString(), __LINE__, __FILE__);
+    }
 }
 
 void CMPTxList::recordTX(const uint256 &txid, bool fValid, int nBlock, unsigned int type, uint64_t nValue)
@@ -3586,7 +3573,6 @@ int mastercore_handler_block_begin(int nBlockPrev, CBlockIndex const * pBlockInd
 
     //handle any features that go live with this block
     // CheckLiveActivations(pBlockIndex->nHeight);
-    //
     eraseExpiredCrowdsale(pBlockIndex);
 
     return 0;
@@ -3598,56 +3584,68 @@ int mastercore_handler_block_begin(int nBlockPrev, CBlockIndex const * pBlockInd
 int mastercore_handler_block_end(int nBlockNow, CBlockIndex const * pBlockIndex,
         unsigned int countMP)
 {
-    LOCK(cs_tally);
+    int nMastercoreInit;
+    {
+        LOCK(cs_tally);
+        nMastercoreInit = mastercoreInitialized;
+    }
 
-    if (!mastercoreInitialized) {
+    if (!nMastercoreInit) {
         mastercore_init();
     }
 
-    // for every new received block must do:
-    // 1) remove expired entries from the accept list (per spec accept entries are
-    //    valid until their blocklimit expiration; because the customer can keep
-    //    paying BTC for the offer in several installments)
-    // 2) update the amount in the Exodus address
-    // int64_t devmsc = 0;
-    unsigned int how_many_erased = eraseExpiredAccepts(nBlockNow);
 
-    if (how_many_erased) {
-        PrintToLog("%s(%d); erased %u accepts this block, line %d, file: %s\n",
-            __FUNCTION__, how_many_erased, nBlockNow, __LINE__, __FILE__);
-    }
-
-
-    // check the alert status, do we need to do anything else here?
-    // CheckExpiredAlerts(nBlockNow, pBlockIndex->GetBlockTime());
-
-    // check that pending transactions are still in the mempool
-    PendingCheck();
-
-    // transactions were found in the block, signal the UI accordingly
-    if (countMP > 0) CheckWalletUpdate(true);
-
-    // calculate and print a consensus hash if required
-    if (msc_debug_consensus_hash_every_block) {
-      uint256 consensusHash = GetConsensusHash();
-      PrintToLog("Consensus hash for block %d: %s\n", nBlockNow, consensusHash.GetHex());
-    }
-
-    // request checkpoint verification
-    bool checkpointValid = VerifyCheckpoint(nBlockNow, pBlockIndex->GetBlockHash());
-    if (!checkpointValid)
+    bool checkpointValid;
     {
-        // failed checkpoint, can't be trusted to provide valid data - shutdown client
-        const std::string& msg = strprintf("Shutting down due to failed checkpoint for block %d (hash %s)\n", nBlockNow, pBlockIndex->GetBlockHash().GetHex());
-        PrintToLog(msg);
-        if (!gArgs.GetBoolArg("-overrideforcedshutdown", false)) {
-            boost::filesystem::path persistPath = GetDataDir() / "MP_persist";
-            if (boost::filesystem::exists(persistPath)) boost::filesystem::remove_all(persistPath); // prevent the node being restarted without a reparse after forced shutdown
-            // AbortNode(msg, msg);
+        LOCK(cs_tally);
+        // for every new received block must do:
+        // 1) remove expired entries from the accept list (per spec accept entries are
+        //    valid until their blocklimit expiration; because the customer can keep
+        //    paying BTC for the offer in several installments)
+        // 2) update the amount in the Exodus address
+        // int64_t devmsc = 0;
+        unsigned int how_many_erased = eraseExpiredAccepts(nBlockNow);
+
+        if (how_many_erased) {
+            PrintToLog("%s(%d); erased %u accepts this block, line %d, file: %s\n",
+                __FUNCTION__, how_many_erased, nBlockNow, __LINE__, __FILE__);
         }
-    } else {
+
+
+        // check the alert status, do we need to do anything else here?
+        // CheckExpiredAlerts(nBlockNow, pBlockIndex->GetBlockTime());
+
+        // check that pending transactions are still in the mempool
+        PendingCheck();
+
+        // transactions were found in the block, signal the UI accordingly
+        if (countMP > 0) CheckWalletUpdate(true);
+
+        // calculate and print a consensus hash if required
+        if (msc_debug_consensus_hash_every_block) {
+          uint256 consensusHash = GetConsensusHash();
+          PrintToLog("Consensus hash for block %d: %s\n", nBlockNow, consensusHash.GetHex());
+        }
+
+        // request checkpoint verification
+        checkpointValid = VerifyCheckpoint(nBlockNow, pBlockIndex->GetBlockHash());
+        if (!checkpointValid)
+        {
+            // failed checkpoint, can't be trusted to provide valid data - shutdown client
+            const std::string& msg = strprintf("Shutting down due to failed checkpoint for block %d (hash %s)\n", nBlockNow, pBlockIndex->GetBlockHash().GetHex());
+            PrintToLog(msg);
+            if (!gArgs.GetBoolArg("-overrideforcedshutdown", false)) {
+                boost::filesystem::path persistPath = GetDataDir() / "MP_persist";
+                if (boost::filesystem::exists(persistPath)) boost::filesystem::remove_all(persistPath); // prevent the node being restarted without a reparse after forced shutdown
+                // AbortNode(msg, msg);
+            }
+        }
+    }
+
+    LOCK2(cs_main, cs_tally);
+    if (checkpointValid){
         // save out the state after this block
-        if (writePersistence(nBlockNow)) {
+        if (writePersistence(nBlockNow) && nBlockNow >= ConsensusParams().GENESIS_BLOCK) {
             mastercore_save_state(pBlockIndex);
         }
     }

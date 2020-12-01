@@ -6,7 +6,7 @@
 #include <string>
 
 #ifdef HAVE_BUILD_INFO
-#    include "build.h"
+#include <obj/build.h>
 #endif
 
 #ifdef OMNICORE_VERSION_STATUS
